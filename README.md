@@ -1,12 +1,15 @@
 This small framework is designed as a test task.
+
 Currently it contains two tests for GetPetById endpoint of Swagger petstore service (https://petstore.swagger.io/).
+
 In the process of development the following tools were used: 
 
-Unit testing framework: NUnit
-BDD Framework: SpecFlow
-Test cases definition language: Gherkin
-Logger: Serilog
-Reporting framework: Allure
+Unit testing framework: NUnit, 
+BDD Framework: SpecFlow, 
+Test cases definition language: Gherkin, 
+Logger: Serilog, 
+Reporting framework: Allure, 
+
 
 An example of Allure report is contained in Allure report example file 
 
