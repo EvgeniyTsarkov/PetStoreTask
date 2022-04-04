@@ -17,10 +17,7 @@ namespace PetStoreTask.Tests.Steps
         }
 
         [BeforeScenario]
-        protected void Setup()
-        {
-            InitializeLogger();
-        }
+        protected void Setup() => InitializeLogger();
 
         protected void InitializeLogger()
         {
