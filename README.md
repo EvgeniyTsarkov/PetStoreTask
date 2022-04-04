@@ -19,5 +19,5 @@ To run an Allure report:
 - from this folder run in command line 
     "allure generate allure-results --clean -o allure-report" 
   to  create the report and
-    "allure open <path to allure report folder>" 
+    "allure open folder" 
   to open it in browser.
