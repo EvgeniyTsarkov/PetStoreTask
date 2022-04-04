@@ -75,12 +75,14 @@ namespace PetStoreTask.Tests.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("GetPetById endpoint returns correct data")]
+        [NUnit.Framework.CategoryAttribute("deleteTestPet")]
         public virtual void GetPetByIdEndpointReturnsCorrectData()
         {
-            string[] tagsOfScenario = ((string[])(null));
+            string[] tagsOfScenario = new string[] {
+                    "deleteTestPet"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetPetById endpoint returns correct data", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 4
+#line 5
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -100,14 +102,14 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 5
+#line 6
  testRunner.Given("Test pet is posted to the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 6
+#line 7
  testRunner.When("GET request is sent", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 7
- testRunner.Then("Correct result should be returned", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 8
+ testRunner.Then("Pet from API shall be equal to expected test pet", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -123,7 +125,7 @@ this.ScenarioInitialize(scenarioInfo);
             argumentsOfScenario.Add("id", id);
             argumentsOfScenario.Add("expectedErrorMessage", expectedErrorMessage);
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetPetById endpoint returns correct error message", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 9
+#line 10
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -143,10 +145,10 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 10
+#line 11
  testRunner.Given(string.Format("GET request is sent with incorrect \'{0}\'", id), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 11
+#line 12
  testRunner.Then(string.Format("Correct \'{0}\' should be returned", expectedErrorMessage), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }

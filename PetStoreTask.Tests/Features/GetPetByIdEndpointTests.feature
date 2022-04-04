@@ -1,10 +1,11 @@
 ﻿Feature: GetPetByIdEndpointTests
 	Tests that verify GetPetById endpoint functionality
 
+@deleteTestPet
 Scenario: GetPetById endpoint returns correct data
 	Given Test pet is posted to the database
 	When GET request is sent
-	Then Correct result should be returned
+	Then Pet from API shall be equal to expected test pet
 
 Scenario: GetPetById endpoint returns correct error message
 	Given GET request is sent with incorrect '<id>'

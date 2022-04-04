@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using PetStoreTask.Business;
 using PetStoreTask.Business.Entities.ApiResponses;
-using PetStoreTask.Business.Utils;
+using PetStoreTask.Tests.Services;
 using RestSharp;
 using TechTalk.SpecFlow;
 
@@ -21,13 +21,12 @@ namespace PetStoreTask.Tests.Steps
         [Given(@"Test pet is posted to the database")]
         public void VerifyPetIsPostedToDatabaseAndGetPetId()
         {
-            _scenarioContext["restClient"] = new RestClient(Urls.BaseUrl);
             _scenarioContext["expectedPet"] = new PetFactory().GetTestPet();
 
-            var request = CreateApiRequest(Method.Post, _scenarioContext.Get<Pet>("expectedPet"));
+            var request = RestRequestsService.
+                CreateApiRequest(Method.Post, _scenarioContext.Get<Pet>("expectedPet"));
 
-            var response = _scenarioContext.Get<RestClient>("restClient")
-                .ExecutePostAsync(request);
+            var response = RestRequestsService.SendRequestAsync(request);
 
             var responseObject = JsonConvert.DeserializeObject<Pet>(response.Result.Content);
 
@@ -42,31 +41,38 @@ namespace PetStoreTask.Tests.Steps
         [When(@"GET request is sent")]
         public void SendCorrectGetRequestToGetPetByIdEndpoint()
         {
-            var request = CreateApiRequest(Method.Get,
+            var request = RestRequestsService.CreateApiRequest(Method.Get,
                 _scenarioContext.Get<Pet>("expectedPet"),
                 _scenarioContext.Get<Pet>("expectedPet").Id.ToString());
 
-            var response = _scenarioContext.Get<RestClient>("restClient")
-                .ExecuteGetAsync(request);
+            var response = RestRequestsService.SendRequestAsync(request);
 
             _scenarioContext["petFromApi"] = JsonConvert.DeserializeObject<Pet>(response.Result.Content);
         }
 
-        [Then(@"Correct result should be returned")]
+        [Then(@"Pet from API shall be equal to expected test pet")]
         public void ValidateGetPetByIdEndpointReturnsCorrectResult() =>
             _scenarioContext.Get<Pet>("petFromApi")
                 .Should().BeEquivalentTo(_scenarioContext.Get<Pet>("expectedPet"),
                     "GET action returned incorrect result");
 
+        [AfterScenario("deleteTestPet")]
+        public void DeleteTestPet()
+        {
+            var request = RestRequestsService.CreateApiRequest(Method.Delete,
+                resource: _scenarioContext.Get<Pet>("expectedPet").Id.ToString());
+
+            var result = RestRequestsService.SendRequestAsync(request);
+
+            result.Result.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        }
+
         [Given(@"GET request is sent with incorrect '(.*)'")]
         public void SendIncorrectRequestToGetPetByIdEndpointAndGetErrorMessage(string id)
         {
-            _scenarioContext["restClient"] = new RestClient(Urls.BaseUrl);
+            var request = RestRequestsService.CreateApiRequest(Method.Get, resource: id);
 
-            var request = CreateApiRequest(Method.Get, resource: id);
-
-            var response = _scenarioContext.Get<RestClient>("restClient")
-                .ExecuteGetAsync(request);
+            var response = RestRequestsService.SendRequestAsync(request);
 
             _scenarioContext["apiErrorMessage"] =
                 JsonConvert.DeserializeObject<ErrorResponse>(response.Result.Content).Message;
@@ -76,23 +82,5 @@ namespace PetStoreTask.Tests.Steps
         public void VerifyCorrectErrorMessageIsReturned(string expectedErrorMessage) =>
             _scenarioContext.Get<string>("apiErrorMessage").Should().BeEquivalentTo(expectedErrorMessage,
                 "Incorrect GET action returned unexpected error message.");
-
-        private static RestRequest CreateApiRequest(Method httpMethod, Pet? requestBody = null, string resource = "")
-        {
-            var request = new RestRequest()
-            {
-                Method = httpMethod,
-                Resource = resource
-            };
-
-            if (requestBody != null)
-            {
-                request.AddBody(requestBody);
-            }
-
-            request.AddHeader("Content-Type", "application/json");
-
-            return request;
-        }
     }
 }
