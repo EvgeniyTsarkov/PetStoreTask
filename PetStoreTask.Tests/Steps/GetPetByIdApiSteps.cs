@@ -4,18 +4,17 @@ using PetStoreTask.Business;
 using PetStoreTask.Business.Entities.ApiResponses;
 using PetStoreTask.Tests.Services;
 using RestSharp;
+using Serilog.Core;
 using TechTalk.SpecFlow;
 
 namespace PetStoreTask.Tests.Steps
 {
     [Binding]
-    class GetPetByIdApiSteps
+    class GetPetByIdApiSteps : BaseStepsDefinitions
     {
-        private readonly ScenarioContext _scenarioContext;
-
         public GetPetByIdApiSteps(ScenarioContext scenarioContext)
+            : base(scenarioContext)
         {
-            _scenarioContext = scenarioContext;
         }
 
         [Given(@"Test pet is posted to the database")]
@@ -26,11 +25,14 @@ namespace PetStoreTask.Tests.Steps
             var request = RestRequestsService.
                 CreateApiRequest(Method.Post, _scenarioContext.Get<Pet>("expectedPet"));
 
+            _scenarioContext.Get<Logger>("logger").Information("Sending POST request to add test pet to database...");
             var response = RestRequestsService.SendRequestAsync(request);
+            _scenarioContext.Get<Logger>("logger").Information("POST request is sent to add test pet to database.");
 
             var responseObject = JsonConvert.DeserializeObject<Pet>(response.Result.Content);
 
             _scenarioContext.Get<Pet>("expectedPet").Id = responseObject.Id;
+            _scenarioContext.Get<Logger>("logger").Information("Test pet id is extracted from API response.");
 
             responseObject.Should().BeEquivalentTo(_scenarioContext.Get<Pet>("expectedPet"),
                 options => options
@@ -45,7 +47,9 @@ namespace PetStoreTask.Tests.Steps
                 _scenarioContext.Get<Pet>("expectedPet"),
                 _scenarioContext.Get<Pet>("expectedPet").Id.ToString());
 
+            _scenarioContext.Get<Logger>("logger").Information("Sending GET request to get test pet by id from database...");
             var response = RestRequestsService.SendRequestAsync(request);
+            _scenarioContext.Get<Logger>("logger").Information("GET request is sent to get test pet by id.");
 
             _scenarioContext["petFromApi"] = JsonConvert.DeserializeObject<Pet>(response.Result.Content);
         }
@@ -62,6 +66,7 @@ namespace PetStoreTask.Tests.Steps
             var request = RestRequestsService.CreateApiRequest(Method.Delete,
                 resource: _scenarioContext.Get<Pet>("expectedPet").Id.ToString());
 
+            _scenarioContext.Get<Logger>("logger").Information("Deleting test pet from database...");
             var result = RestRequestsService.SendRequestAsync(request);
 
             result.Result.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
@@ -72,7 +77,9 @@ namespace PetStoreTask.Tests.Steps
         {
             var request = RestRequestsService.CreateApiRequest(Method.Get, resource: id);
 
+            _scenarioContext.Get<Logger>("logger").Information("Sending GET request with invalid id value...");
             var response = RestRequestsService.SendRequestAsync(request);
+            _scenarioContext.Get<Logger>("logger").Information("GET request with invalid value is sent.");
 
             _scenarioContext["apiErrorMessage"] =
                 JsonConvert.DeserializeObject<ErrorResponse>(response.Result.Content).Message;
